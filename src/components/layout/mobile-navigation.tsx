@@ -20,8 +20,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { cta, navigation } from "@/content/navigation";
+import {
+  cta,
+  isNavigationItemDisabled,
+  navigation,
+} from "@/content/navigation";
 import { cn } from "@/lib/utils";
+
+const disabledClass = "pointer-events-none cursor-default opacity-40";
 
 export default function MobileNavigation() {
   const [open, setOpen] = React.useState(false);
@@ -59,6 +65,21 @@ export default function MobileNavigation() {
             multiple
           >
             {navigation.map((item) => {
+              if (isNavigationItemDisabled(item)) {
+                return (
+                  <span
+                    key={item.title}
+                    aria-disabled="true"
+                    className={cn(
+                      "block w-full border-b border-border py-4 text-base font-medium",
+                      disabledClass,
+                    )}
+                  >
+                    {item.title}
+                  </span>
+                );
+              }
+
               if (item.subItems?.length) {
                 return (
                   <AccordionItem key={item.title} value={item.title}>
@@ -71,6 +92,20 @@ export default function MobileNavigation() {
                           }
 
                           const description = subItem.description?.trim();
+
+                          if (subItem.disabled) {
+                            return (
+                              <li
+                                key={subItem.title}
+                                className={cn(
+                                  "px-3 py-3 text-sm font-medium",
+                                  disabledClass,
+                                )}
+                              >
+                                {subItem.title}
+                              </li>
+                            );
+                          }
 
                           return (
                             <li key={subItem.title}>

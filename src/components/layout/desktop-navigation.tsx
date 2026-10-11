@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { navigation } from "@/content/navigation";
+import { isNavigationItemDisabled, navigation } from "@/content/navigation";
+import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,11 +14,26 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
+const disabledClass = "pointer-events-none cursor-default opacity-40";
+
 export default function DesktopNavigation() {
   return (
     <NavigationMenu>
       <NavigationMenuList className="gap-4 xl:gap-6">
         {navigation.map((item) => {
+          if (isNavigationItemDisabled(item)) {
+            return (
+              <NavigationMenuItem key={item.title}>
+                <span
+                  aria-disabled="true"
+                  className={cn(navigationMenuTriggerStyle(), disabledClass)}
+                >
+                  {item.title}
+                </span>
+              </NavigationMenuItem>
+            );
+          }
+
           if (item.subItems) {
             return (
               <NavigationMenuItem key={item.title}>
@@ -30,6 +46,17 @@ export default function DesktopNavigation() {
                       }
 
                       const description = subItem.description?.trim();
+
+                      if (subItem.disabled) {
+                        return (
+                          <li
+                            key={subItem.title}
+                            className={cn("px-2.5 py-2 text-sm font-medium", disabledClass)}
+                          >
+                            {subItem.title}
+                          </li>
+                        );
+                      }
 
                       return (
                         <ListItem
